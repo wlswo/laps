@@ -194,17 +194,6 @@ html[lang='ko'] .section-head h2 { line-height: 1.2; letter-spacing: -1px; }
 .wd.sun.on { color: var(--warn); }
 
 .results { position: relative; padding: 28px 32px 30px; min-width: 0; overflow: hidden; }
-.scan {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  background: linear-gradient(180deg, transparent 0%, transparent 72%, rgba(244, 178, 107, .1) 96%, rgba(244, 178, 107, .55) 100%);
-  transform: translateY(-100%);
-}
-.scan.run { animation: scan .68s var(--ease); }
-@keyframes scan {
-  0% { opacity: 1; transform: translateY(-100%); }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(0); }
-}
 .headline-stats { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
 .first .value { display: flex; align-items: baseline; gap: 10px; margin-top: 6px; }
 .first em { font: 500 22px var(--sans); font-style: normal; color: rgba(255, 255, 255, .6); }

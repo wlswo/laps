@@ -199,7 +199,6 @@ function tapOn(box, target) {
   const track = $('[data-track]', root);
   const ticks = $('[data-ticks]', root);
   const heavy = $('[data-heavy]', root);
-  const scan = $('.scan', root);
   const caption = $('[data-caption]', root);
   const bars = $$('.calc-progress i', root);
   const [daysPre, daysPost] = s.calc.daysN.split('{n}');
@@ -272,7 +271,7 @@ function tapOn(box, target) {
     }
   };
 
-  /** The results for one state: every number rolls, every bar slides, and a scan line passes over once. */
+  /** The results for one state: every number rolls and every bar slides. */
   const show = (state) => {
     const p = plan(state);
     const result = preview(p);
@@ -314,11 +313,6 @@ function tapOn(box, target) {
       $('b', seg).textContent = `${read.read}R/${read.pagesPerDay}p`;
     });
     renderTicks(state.days);
-    if (!reduceMotion) {
-      scan.classList.remove('run');
-      void scan.offsetWidth;
-      scan.classList.add('run');
-    }
   };
 
   const field = (name) => $(`[data-field="${name}"]`, root);
@@ -482,7 +476,7 @@ function tapOn(box, target) {
   root.classList.add('stacked');
   window.addEventListener('resize', stack);
   document.fonts?.ready.then(stack);
-  // Opens once most of the first phone is in view, so the stack is seen before it fans out.
+  // Opens once the first phone is well up the screen, so the stack is seen for a while before it fans out.
   const io = new IntersectionObserver(
     ([entry]) => {
       if (!entry.isIntersecting) return;
@@ -490,7 +484,7 @@ function tapOn(box, target) {
       root.classList.add('open');
       io.disconnect();
     },
-    { threshold: 0.6 }
+    { threshold: 0.85, rootMargin: '0px 0px -15% 0px' }
   );
   io.observe($('.device', items[0]));
 })();

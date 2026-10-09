@@ -115,8 +115,8 @@ export const t = {
       ],
     },
     ux: {
-      title: ['UI and UX', 'built around how you study'],
-      lead: 'Small moments, tuned so there is less to think about while you read.',
+      title: ['Small things, handled,', 'so you can just study'],
+      lead: 'Late nights, a slipped tap, a day already done. Each moment you run into while studying is taken care of.',
       items: [
         { title: 'Today lasts until 4 a.m.', text: 'Reading late still counts for that evening. Midnight does not reset today\'s pages.' },
         { title: 'Tapped by mistake? Tap again', text: 'A second tap on the box takes it back. No confirm dialogs.' },
@@ -266,8 +266,8 @@ export const t = {
       ],
     },
     ux: {
-      title: ['사용자를 고려한', 'UI/UX를 적용했어요'],
-      lead: '공부하는 동안 신경 쓸 일이 줄도록, 작은 순간까지 맞췄어요.',
+      title: ['공부에만 집중하도록,', '작은 것까지 챙겼어요'],
+      lead: '늦은 밤, 잘못 누른 체크, 다 읽은 날까지. 공부하다 마주치는 순간을 하나하나 맞췄어요.',
       items: [
         { title: '새벽 4시까지는 오늘', text: '밤늦게 읽어도 그날 기록으로 들어가요. 자정이 지나도 오늘 분량은 그대로예요.' },
         { title: '실수로 눌러도 괜찮아요', text: '체크칸을 한 번 더 누르면 되돌아가요. 확인 창으로 묻지 않아요.' },
