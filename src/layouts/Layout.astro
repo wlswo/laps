@@ -1,20 +1,20 @@
 ---
 // Shared frame for every page: the app's look (ink boxes, dithered shadows, Space Grotesk and JetBrains Mono,
-// IBM Plex Sans KR for Korean), a header with the language switch and a footer.
-import { t, type Lang, otherLang, href } from '../i18n';
+// IBM Plex Sans KR for Korean), a sticky header with the language switch, and a footer.
+import { t, type Lang, type Page, otherLang, href } from '../i18n';
 
 interface Props {
   lang: Lang;
   title: string;
   description: string;
-  /** The page's path without the language prefix: '', 'privacy', 'support'. */
-  page: '' | 'privacy' | 'support';
+  page: Page;
 }
 
 const { lang, title, description, page } = Astro.props;
 const s = t[lang];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = new URL(href(lang, page), Astro.site).toString();
+const home = href(lang, '');
 ---
 
 <!doctype html>
@@ -37,33 +37,46 @@ const canonical = new URL(href(lang, page), Astro.site).toString();
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&family=JetBrains+Mono:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
-    <header class="top">
-      <a class="brand" href={href(lang, '')}>
-        <img src={`${base}/icon.png`} alt="" width="36" height="36" />
-        <span>Laps</span>
-      </a>
-      <nav>
-        <a href={href(lang, 'support')} class:list={[{ on: page === 'support' }]}>{s.nav.support}</a>
-        <a href={href(lang, 'privacy')} class:list={[{ on: page === 'privacy' }]}>{s.nav.privacy}</a>
-        <a class="lang" href={href(otherLang(lang), page)} hreflang={otherLang(lang)}>{s.nav.other}</a>
-      </nav>
+    <header class="top" data-top>
+      <div class="top-in">
+        <a class="brand" href={home}>
+          <img src={`${base}/icon.png`} alt="" width="32" height="32" />
+          <span>Laps</span>
+        </a>
+        <nav>
+          <a class="wide" href={`${home}#calc`}>{s.nav.calc}</a>
+          <a class="wide" href={`${home}#tour`}>{s.nav.tour}</a>
+          <a href={`${home}#faq`}>{s.nav.faq}</a>
+          <a href={href(lang, 'support')} class:list={[{ on: page === 'support' }]}>{s.nav.support}</a>
+          <a class="lang" href={href(otherLang(lang), page)} hreflang={otherLang(lang)}>{s.nav.other}</a>
+        </nav>
+      </div>
     </header>
     <main>
       <slot />
     </main>
     <footer class="bottom">
-      <div>
-        <a href={`mailto:laps@wlswo.me`}>laps@wlswo.me</a>
-        <a href={href(lang, 'support')}>{s.nav.support}</a>
-        <a href={href(lang, 'privacy')}>{s.nav.privacy}</a>
+      <div class="bottom-in">
+        <div class="links">
+          <a href={`mailto:laps@wlswo.me`}>laps@wlswo.me</a>
+          <a href={href(lang, 'support')}>{s.nav.support}</a>
+          <a href={href(lang, 'privacy')}>{s.nav.privacy}</a>
+        </div>
+        <p>© 2026 JAEJIN BYUN</p>
       </div>
-      <p>© 2026 JAEJIN BYUN</p>
     </footer>
+    <script>
+      // The header gets its hairline once the page has scrolled.
+      const top = document.querySelector('[data-top]');
+      const onScroll = () => top?.classList.toggle('scrolled', window.scrollY > 8);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    </script>
   </body>
 </html>
 
@@ -82,11 +95,13 @@ const canonical = new URL(href(lang, page), Astro.site).toString();
     --good: #1baf7a;
     --mono: 'JetBrains Mono', 'IBM Plex Sans KR', ui-monospace, monospace;
     --sans: 'Space Grotesk', 'IBM Plex Sans KR', system-ui, sans-serif;
+    --ease: cubic-bezier(.2, .7, .2, 1);
     --dither: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'><rect x='0' y='0' width='1' height='1.4' fill='%230f172b'/><rect x='2' y='2' width='1' height='1.4' fill='%230f172b'/></svg>");
-    --dither-light: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'><rect x='0' y='0' width='1' height='1.4' fill='%2394a3b8'/><rect x='2' y='2' width='1' height='1.4' fill='%2394a3b8'/></svg>");
+    --dither-white: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'><rect x='0' y='0' width='1' height='1.4' fill='white'/><rect x='2' y='2' width='1' height='1.4' fill='white'/></svg>");
+    --dither-faint: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'><rect x='0' y='0' width='1' height='1.4' fill='%2394a3b8'/><rect x='2' y='2' width='1' height='1.4' fill='%2394a3b8'/></svg>");
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 72px; }
   body {
     margin: 0;
     background: var(--paper);
@@ -94,58 +109,71 @@ const canonical = new URL(href(lang, page), Astro.site).toString();
     font-family: var(--sans);
     font-size: 17px;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  main { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  html[lang='ko'] body { word-break: keep-all; }
+  main { overflow-x: clip; }
   a { color: var(--ink); }
   img { max-width: 100%; }
+  button { font: inherit; color: inherit; }
+  ::selection { background: var(--accent); color: var(--ink); }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
   /* An ink box with the app's dithered shadow. */
   .box { position: relative; background: var(--surface); border: 1.5px solid var(--ink); }
   .box::after {
     content: ''; position: absolute; left: 4px; top: 4px; right: -6px; bottom: -6px; z-index: -1;
-    background-image: var(--dither); background-size: 4px 4px; opacity: .8;
+    background-image: var(--dither); background-size: 4px 4px; opacity: .8; pointer-events: none;
   }
-  .kicker { font: 700 13px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .kicker { font: 700 13px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: pre; }
   .link { font: 700 15px var(--mono); text-decoration: underline dotted; text-underline-offset: 5px; }
+  .num { font-variant-numeric: tabular-nums; }
 
-  .top {
-    max-width: 1080px; margin: 0 auto; padding: 22px 20px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  /* Scroll reveal: in once, no bounce. */
+  [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  [data-reveal].in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
   }
-  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 22px var(--sans); }
-  .brand img { border-radius: 9px; }
-  .top nav { display: flex; gap: 22px; align-items: baseline; }
-  .top nav a { font: 600 14px var(--mono); text-decoration: none; color: var(--muted); }
+
+  .top { position: sticky; top: 0; z-index: 50; background: rgba(248, 250, 252, .82); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color .3s; }
+  .top.scrolled { border-bottom-color: var(--hair); }
+  .top-in { max-width: 1120px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 21px var(--sans); }
+  .brand img { border-radius: 8px; }
+  .top nav { display: flex; gap: 24px; align-items: baseline; }
+  .top nav a { font: 600 14px var(--mono); text-decoration: none; color: var(--muted); transition: color .2s; }
   .top nav a.on, .top nav a:hover { color: var(--ink); }
   .top nav a.lang { color: var(--ink); text-decoration: underline dotted; text-underline-offset: 5px; }
 
-  .bottom {
-    max-width: 1080px; margin: 96px auto 0; padding: 28px 20px 48px; border-top: 1.5px solid var(--ink);
-    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    font: 600 13px var(--mono); color: var(--muted);
-  }
-  .bottom div { display: flex; gap: 20px; flex-wrap: wrap; }
+  .bottom { margin-top: 0; border-top: 1.5px solid var(--ink); }
+  .bottom-in { max-width: 1120px; margin: 0 auto; padding: 28px 24px 48px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font: 600 13px var(--mono); color: var(--muted); }
+  .bottom .links { display: flex; gap: 22px; flex-wrap: wrap; }
   .bottom a { color: var(--muted); text-decoration: none; }
   .bottom a:hover { color: var(--ink); }
   .bottom p { margin: 0; }
 
   /* Text pages: privacy, support. */
-  .doc { max-width: 720px; margin: 40px auto 0; }
-  .doc h1 { font: 700 40px/1.2 var(--sans); margin: 8px 0 6px; }
+  .doc { max-width: 720px; margin: 56px auto 120px; padding: 0 24px; }
+  .doc h1 { font: 700 44px/1.15 var(--sans); margin: 10px 0 8px; letter-spacing: -.5px; }
   .doc .updated { font: 600 13px var(--mono); color: var(--muted); margin: 0 0 28px; }
   .doc .box { padding: 6px 26px; }
-  .doc h2 { font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 40px 0 12px; }
+  .doc h2 { font: 700 13px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 44px 0 14px; }
   .doc dl { margin: 0; }
   .doc dt { font: 600 17px/1.45 var(--sans); padding: 18px 0 4px; }
-  .doc dd { margin: 0; padding: 0 0 18px; color: var(--ink); border-bottom: 1px solid var(--hair); }
+  .doc dd { margin: 0; padding: 0 0 18px; border-bottom: 1px solid var(--hair); }
   .doc dd:last-of-type { border-bottom: 0; }
   .doc p.lead { font-size: 19px; }
 
-  @media (max-width: 640px) {
+  @media (max-width: 760px) {
     body { font-size: 16px; }
     .top nav { gap: 14px; }
     .top nav a { font-size: 13px; }
-    .doc h1 { font-size: 32px; }
+    .top nav a.wide { display: none; }
+    .doc h1 { font-size: 34px; }
     .doc .box { padding: 4px 18px; }
   }
 </style>
