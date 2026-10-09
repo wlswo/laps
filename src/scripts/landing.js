@@ -12,6 +12,9 @@ const fill = (text, values) => text.replace(/\{(\w+)\}/g, (_, key) => String(val
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// Every self-playing demo runs at 1.4x the pace it was first timed at.
+const SPEED = 1.4;
+const fast = (ms) => Math.round(ms / SPEED);
 const today = (() => {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -157,7 +160,7 @@ function runBar(bar, ms) {
     { pages: 600, reads: 5, days: 80, rest: [0], speed: 1.7 },
     { pages: 600, reads: 4, days: 80, rest: [0], speed: 1.7 },
   ];
-  const STEP_MS = 4600;
+  const STEP_MS = fast(4600);
   const maxReads = Math.max(...steps.map((step) => step.reads));
   const first = roll($('[data-roll="first"]', root), { slots: 2 });
   const peak = roll($('[data-roll="peak"]', root), { slots: 2 });
@@ -297,22 +300,22 @@ function runBar(bar, ms) {
   const typeInto = async (name, text) => {
     const el = $(`[data-type="${name}"]`, root);
     field(name).classList.add('active');
-    await wait(380);
+    await wait(fast(380));
     while (el.textContent.length) {
       el.textContent = el.textContent.slice(0, -1);
-      await wait(70);
+      await wait(fast(70));
     }
-    await wait(140);
+    await wait(fast(140));
     for (const ch of text) {
       el.textContent += ch;
-      await wait(150);
+      await wait(fast(150));
     }
   };
   const tapRest = async (day, on) => {
     field('rest').classList.add('active');
-    await wait(420);
+    await wait(fast(420));
     $(`[data-rest="${day}"]`, root).classList.toggle('on', on);
-    await wait(200);
+    await wait(fast(200));
   };
 
   const apply = async (from, to) => {
@@ -327,9 +330,9 @@ function runBar(bar, ms) {
     }
     await Promise.all(changes);
     showInputs(to);
-    await wait(260);
+    await wait(fast(260));
     show(to);
-    await wait(1300);
+    await wait(fast(1300));
     $$('.field.active', root).forEach((f) => f.classList.remove('active'));
   };
 
@@ -418,7 +421,7 @@ function runBar(bar, ms) {
   (async () => {
     await gate();
     for (let i = 1; ; i = (i + 1) % shifts.length) {
-      await sleep(2500);
+      await sleep(fast(2500));
       render(shifts[i]);
     }
   })();
@@ -599,7 +602,7 @@ function runBar(bar, ms) {
     const el = $('[data-scene]', tile);
     const scene = builders[el.dataset.scene](el);
     let timers = [];
-    const later = (ms, fn) => timers.push(setTimeout(fn, ms));
+    const later = (ms, fn) => timers.push(setTimeout(fn, fast(ms)));
     return {
       el,
       reset() {
@@ -625,15 +628,15 @@ function runBar(bar, ms) {
     const scene = scenes[i];
     // A scene left in its last state fades out, starts over, and fades back in.
     scene.el.classList.add('fading');
-    await wait(260);
+    await wait(fast(260));
     if (mine !== token) return;
     scene.reset();
     scene.el.classList.remove('fading');
-    await wait(240);
+    await wait(fast(240));
     if (mine !== token) return;
     const ms = scene.play();
-    runBar($('.tile-progress i', tiles[i]), ms);
-    await wait(ms + 400);
+    runBar($('.tile-progress i', tiles[i]), fast(ms));
+    await wait(fast(ms + 400));
     if (mine !== token) return;
     await gate();
     if (mine === token) run((i + 1) % tiles.length);

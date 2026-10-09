@@ -69,10 +69,19 @@ const home = href(lang, '');
         </div>
       </div>
     </footer>
+    <button class="to-top" type="button" data-to-top aria-label={lang === 'ko' ? '맨 위로' : 'Back to top'}>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" /></svg>
+    </button>
     <script>
       // The header gets its hairline once the page has scrolled.
       const top = document.querySelector('[data-top]');
-      const onScroll = () => top?.classList.toggle('scrolled', window.scrollY > 8);
+      // The round button bottom right shows once the page has scrolled a screen down, and goes back to the top.
+      const toTop = document.querySelector('[data-to-top]');
+      const onScroll = () => {
+        top?.classList.toggle('scrolled', window.scrollY > 8);
+        toTop?.classList.toggle('on', window.scrollY > window.innerHeight * 0.8);
+      };
+      toTop?.addEventListener('click', () => window.scrollTo({ top: 0 }));
       onScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
     </script>
@@ -154,6 +163,19 @@ const home = href(lang, '');
   .bottom a { color: var(--muted); text-decoration: none; }
   .bottom a:hover { color: var(--ink); }
   .bottom p { margin: 0; }
+
+  .to-top {
+    position: fixed; right: 24px; bottom: 24px; z-index: 60;
+    width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: var(--ink); cursor: pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    opacity: 0; transform: translateY(12px); pointer-events: none;
+    transition: opacity .3s var(--ease), transform .3s var(--ease);
+  }
+  .to-top.on { opacity: 1; transform: none; pointer-events: auto; }
+  .to-top:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .to-top:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
   /* Text pages: privacy, support. */
   .doc { max-width: 720px; margin: 56px auto 120px; padding: 0 24px; }

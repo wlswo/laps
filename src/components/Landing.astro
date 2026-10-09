@@ -20,6 +20,8 @@ const left = totalToday - read;
 // The stack the screens fan out of: the middle one on top.
 const fanZ = [3, 4, 5, 4, 3];
 const [chapterPre, chapterPost] = s.ux.chapterRange.split('{to}');
+// The headline with "Laps" picked out in orange.
+const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps: part === 'Laps' }));
 ---
 
 <script type="application/json" id="laps-data" set:html={JSON.stringify({ lang, s })} />
@@ -29,8 +31,9 @@ const [chapterPre, chapterPost] = s.ux.chapterRange.split('{to}');
   <div class="hero-copy" data-reveal>
     <p class="kicker">{s.hero.kicker}</p>
     <h1>
-      <span class="line">{s.hero.headline[0]}</span>
-      <span class="line"><span class="mark">{s.hero.headline[1]}</span></span>
+      {s.hero.headline.map((line) => (
+        <span class="line">{brand(line).map(({ part, laps }) => (laps ? <span class="brand-word">{part}</span> : part))}</span>
+      ))}
     </h1>
     <p class="lead">{s.hero.lead}</p>
     <p class="chip">{s.hero.free}</p>
@@ -414,7 +417,6 @@ const [chapterPre, chapterPost] = s.ux.chapterRange.split('{to}');
     <h2>{s.cta.title[0]}<br />{s.cta.title[1]}</h2>
     <div class="cta-row">
       <span class="soon light">{s.hero.soon}</span>
-      <a class="link light" href="#calc">{s.hero.try} ↑</a>
     </div>
     <p class="closing-note">{s.cta.privacy}</p>
   </div>
