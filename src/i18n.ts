@@ -31,8 +31,6 @@ export const t = {
       lead: 'Enter the pages, a finish date and how many times to read. Laps works out today\'s pages, and when you fall behind or get ahead, it re-plans the rest. Pace is our job.',
       free: '1 book free forever, one-time purchase',
       soon: 'Coming soon to the App Store',
-      try: 'See the math',
-      hint: 'Tap a box',
     },
     home: {
       date: 'Friday, Oct 9',
@@ -184,8 +182,6 @@ export const t = {
       lead: '책 범위, 끝낼 날, 회독 수만 넣으면 끝이에요. 오늘 읽을 쪽부터 밀렸을 때 다시 나누는 것까지, 페이스 조절은 전부 Laps가 해요.',
       free: '책 1권 평생 무료, 7,700원 한 번',
       soon: 'App Store 출시 준비 중',
-      try: '계산하는 모습 보기',
-      hint: '체크칸을 눌러 보세요',
     },
     home: {
       date: '10월 9일 금요일',

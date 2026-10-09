@@ -113,7 +113,19 @@ function runBar(bar, ms) {
   bar.style.width = '100%';
 }
 
-/* ---------- Hero: the app's home screen ---------- */
+/** A tap on `target` inside `box`: a soft circle that fades in and out where the finger would be. */
+function tapOn(box, target) {
+  const tap = $('.tap', box);
+  const a = box.getBoundingClientRect();
+  const b = target.getBoundingClientRect();
+  tap.style.left = `${b.left - a.left + b.width / 2}px`;
+  tap.style.top = `${b.top - a.top + b.height / 2}px`;
+  tap.classList.remove('on');
+  void tap.offsetWidth;
+  tap.classList.add('on');
+}
+
+/* ---------- Hero: the app's home screen, checking itself off ---------- */
 (function home() {
   const root = $('[data-home]');
   if (!root) return;
@@ -137,16 +149,35 @@ function runBar(bar, ms) {
       paintSeparators(fills[i].parentElement, fraction);
     });
   };
+  render();
+  if (reduceMotion) return;
 
-  rows.forEach((row, i) =>
-    row.addEventListener('click', () => {
+  const list = $('.app-list', root);
+  const toggle = (i) => {
+    tapOn(list, $('.check', rows[i]));
+    setTimeout(() => {
       const book = books[i];
       book.done = !book.done;
       book.position += book.done ? book.pages : -book.pages;
       render();
-    })
-  );
-  render();
+    }, fast(150));
+  };
+  // Read the rest of today, see "done for today", then take it back, again and again.
+  const { gate, sleep } = onScreen(root, 0.3);
+  (async () => {
+    await gate();
+    for (;;) {
+      for (const i of [0, 2]) {
+        await sleep(fast(1400));
+        toggle(i);
+      }
+      await sleep(fast(2600));
+      for (const i of [2, 0]) {
+        toggle(i);
+        await sleep(fast(1400));
+      }
+    }
+  })();
 })();
 
 /* ---------- The math: the numbers type themselves in, the plan works itself out ---------- */
@@ -469,18 +500,6 @@ function runBar(bar, ms) {
   const root = $('[data-ux]');
   if (!root) return;
   const tiles = $$('[data-tile]', root);
-
-  /** A tap on `target`: a soft circle that fades in and out where the finger would be. */
-  const tapOn = (scene, target) => {
-    const tap = $('.tap', scene);
-    const a = scene.getBoundingClientRect();
-    const b = target.getBoundingClientRect();
-    tap.style.left = `${b.left - a.left + b.width / 2}px`;
-    tap.style.top = `${b.top - a.top + b.height / 2}px`;
-    tap.classList.remove('on');
-    void tap.offsetWidth;
-    tap.classList.add('on');
-  };
 
   const builders = {
     clock(el) {
