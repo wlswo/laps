@@ -1,7 +1,7 @@
 ---
 // The landing page, in either language. "Leave the math to Laps": a live copy of the app's home screen, the app's
-// own scheduling math to play with, pace when you fall behind, a tour of the screens, the motion details, price
-// and FAQ. All interaction lives in src/scripts/landing.js; this file is the markup.
+// own scheduling math playing out by itself, pace moving on its own, the screens fanning out, the UI and UX details,
+// price and FAQ. All motion lives in src/scripts/landing.js; this file is the markup.
 import '../styles/landing.css';
 import { t, type Lang, languages } from '../i18n';
 
@@ -17,6 +17,9 @@ const fill = (text: string, values: Record<string, string | number>) =>
 const read = s.home.books.filter((b) => b.done).reduce((sum, b) => sum + b.pages, 0);
 const totalToday = s.home.books.reduce((sum, b) => sum + b.pages, 0);
 const left = totalToday - read;
+// The stack the screens fan out of: the middle one on top.
+const fanZ = [3, 4, 5, 4, 3];
+const [chapterPre, chapterPost] = s.ux.chapterRange.split('{to}');
 ---
 
 <script type="application/json" id="laps-data" set:html={JSON.stringify({ lang, s })} />
@@ -84,9 +87,11 @@ const left = totalToday - read;
         {s.home.books.map((book, i) => (
           <div class="prog">
             <span class="prog-title">{book.title}</span>
-            <span class="blocks" style={`--reads:${book.reads}`}>
+            <span class="blocks">
               <i data-prog={i} style={`width:${(book.position / (book.pagesPerPass * book.reads)) * 100}%`} />
-              {Array.from({ length: book.reads - 1 }, (_, k) => <span class="sep" data-at={(k + 1) / book.reads} style={`left:${((k + 1) / book.reads) * 100}%`} />)}
+              {Array.from({ length: book.reads - 1 }, (_, k) => (
+                <span class="sep" data-at={(k + 1) / book.reads} style={`left:${((k + 1) / book.reads) * 100}%`} />
+              ))}
             </span>
           </div>
         ))}
@@ -96,91 +101,76 @@ const left = totalToday - read;
   </div>
 </section>
 
-<!-- 01 The math: the app's calculation, live. -->
+<!-- The math, typing itself in and working itself out with the app's own calculation. -->
 <section class="band dark" id="calc">
   <div class="wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.calc.kicker}</p>
       <h2>{s.calc.title[0]}<br />{s.calc.title[1]}</h2>
       <p class="section-lead">{s.calc.lead}</p>
     </header>
 
     <div class="calc" data-calc data-reveal>
-      <div class="controls">
-        <div class="control">
-          <label for="calc-pages">{s.calc.pages}</label>
-          <div class="stepper">
-            <button type="button" data-step="pages" data-by="-10" aria-label="−">−</button>
-            <output class="num" data-out="pages">600</output>
-            <button type="button" data-step="pages" data-by="10" aria-label="+">+</button>
-          </div>
-          <input id="calc-pages" type="range" min="50" max="1500" step="10" value="600" data-input="pages" />
-        </div>
-        <div class="control">
-          <label>{s.calc.reads}</label>
-          <div class="stepper">
-            <button type="button" data-step="reads" data-by="-1" aria-label="−">−</button>
-            <output class="num" data-out="reads">5</output>
-            <button type="button" data-step="reads" data-by="1" aria-label="+">+</button>
-          </div>
-          <div class="read-dots" data-read-dots>{Array.from({ length: 10 }, () => <i />)}</div>
-        </div>
-        <div class="control">
-          <label for="calc-days">{s.calc.days}</label>
-          <div class="days-line">
-            <output class="num" data-out="days">90</output>
-            <span data-out="finish"></span>
-          </div>
-          <input id="calc-days" type="range" min="7" max="365" step="1" value="90" data-input="days" />
-        </div>
-        <div class="control">
-          <label>{s.calc.rest}</label>
-          <div class="weekdays">
-            {s.calc.weekdays.map((d, i) => (
-              <button type="button" class:list={[{ sun: i === 6 }]} data-rest={(i + 1) % 7} aria-pressed="false">{d}</button>
-            ))}
-          </div>
-        </div>
-        <div class="control">
-          <label>{s.calc.speed}</label>
-          <div class="stepper">
-            <button type="button" data-step="speed" data-by="-0.1" aria-label="−">−</button>
-            <output class="num" data-out="speed">1.7</output>
-            <button type="button" data-step="speed" data-by="0.1" aria-label="+">+</button>
-          </div>
-          <p class="control-note" data-out="speedNote"></p>
-        </div>
+      <div class="calc-bar">
+        <span class="calc-caption"><i aria-hidden="true"></i><span class="swap" data-caption aria-live="polite">{s.calc.steps[0]}</span></span>
+        <span class="calc-progress" aria-hidden="true">{s.calc.steps.map(() => <span><i /></span>)}</span>
       </div>
+      <div class="calc-body">
+        <div class="inputs">
+          <div class="field" data-field="pages">
+            <span class="label">{s.calc.pages}</span>
+            <span class="field-value"><span class="type-box" style="--w:4ch"><span class="type" data-type="pages">600</span><span class="caret" aria-hidden="true"></span></span><em>{s.calc.units.pages}</em></span>
+          </div>
+          <div class="field" data-field="reads">
+            <span class="label">{s.calc.reads}</span>
+            <span class="field-value"><span class="type-box" style="--w:2ch"><span class="type" data-type="reads">5</span><span class="caret" aria-hidden="true"></span></span><em>{s.calc.units.reads}</em></span>
+            <span class="read-dots" data-read-dots>{Array.from({ length: 10 }, (_, i) => <i class:list={[{ on: i < 5 }]} />)}</span>
+          </div>
+          <div class="field" data-field="days">
+            <span class="label">{s.calc.days}</span>
+            <span class="field-value"><span class="type-box" style="--w:3ch"><span class="type" data-type="days">90</span><span class="caret" aria-hidden="true"></span></span><em>{s.calc.units.days}</em><span class="field-note swap" data-finish></span></span>
+          </div>
+          <div class="field" data-field="rest">
+            <span class="label">{s.calc.rest}</span>
+            <span class="weekdays">
+              {s.calc.weekdays.map((d, i) => <span class:list={['wd', { sun: i === 6 }]} data-rest={(i + 1) % 7}>{d}</span>)}
+            </span>
+          </div>
+          <div class="field" data-field="speed">
+            <span class="label">{s.calc.speed}</span>
+            <span class="field-value"><span class="type-box" style="--w:3ch"><span class="type" data-type="speed">1.7</span><span class="caret" aria-hidden="true"></span></span><em>{s.calc.units.speed}</em></span>
+          </div>
+        </div>
 
-      <div class="results">
-        <div class="headline-stats">
-          <div class="first">
-            <span class="label">{s.calc.firstDay}</span>
-            <span class="value"><span class="roll huge" data-roll="first" data-value="17">17</span><em>{s.calc.perDayUnit}</em></span>
+        <div class="results" data-results>
+          <span class="scan" aria-hidden="true"></span>
+          <div class="headline-stats">
+            <div class="first">
+              <span class="label">{s.calc.firstDay}</span>
+              <span class="value"><span class="roll huge" data-roll="first" data-value="17">17</span><em>{s.calc.perDayUnit}</em></span>
+            </div>
+            <div class="side">
+              <div><span class="label">{s.calc.peak}</span><span class="side-value"><span class="roll" data-roll="peak" data-value="66">66</span><small>{s.calc.perDayUnit}</small></span></div>
+              <div><span class="label">{s.calc.finish}</span><span class="side-value swap" data-out="finishDate"></span></div>
+            </div>
           </div>
-          <div class="side">
-            <div><span class="label">{s.calc.peak}</span><span class="num side-value" data-out="peak">64</span></div>
-            <div><span class="label">{s.calc.finish}</span><span class="side-value" data-out="finishDate"></span></div>
+          <div class="heavy-wrap" data-heavy><div><p class="heavy"><span class="warn">{s.calc.heavy}</span><span data-heavy-note></span></p></div></div>
+          <div class="reads" data-reads></div>
+          <div class="timeline">
+            <div class="timeline-head"><span class="label">{s.calc.timeline}</span><span class="label swap" data-timeline-end></span></div>
+            <div class="track" data-track></div>
+            <div class="ticks" data-ticks></div>
           </div>
+          <p class="footnote" data-footnote></p>
         </div>
-        <p class="heavy" data-heavy hidden><span class="warn">{s.calc.heavy}</span><span data-heavy-note></span></p>
-        <div class="reads" data-reads></div>
-        <div class="timeline">
-          <div class="timeline-head"><span class="label">{s.calc.timeline}</span><span class="label" data-timeline-end></span></div>
-          <div class="track" data-track></div>
-          <div class="ticks" data-ticks></div>
-        </div>
-        <p class="footnote" data-footnote></p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 02 Pace: fall behind and see it spread out again. -->
+<!-- Pace: the plan spreads out again by itself. -->
 <section class="band" id="pace">
   <div class="wrap pace">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.pace.kicker}</p>
       <h2>{s.pace.title[0]}<br />{s.pace.title[1]}</h2>
       <p class="section-lead">{s.pace.lead}</p>
     </header>
@@ -188,17 +178,25 @@ const left = totalToday - read;
       <div class="pace-top">
         <div class="pace-readout">
           <span class="label">{s.pace.at}</span>
-          <strong data-pace-shift></strong>
+          <strong class="swap" data-pace-shift>{s.pace.onPlan}</strong>
         </div>
         <div class="pace-number">
           {s.pace.pre && <span class="pace-unit">{s.pace.pre}</span>}
-          <span class="num" data-pace-number>+2</span>
+          <span class="pace-value" data-pace-value><span class="pace-sign" data-pace-sign>±</span><span class="roll" data-pace-roll data-value="0">0</span></span>
           <span class="pace-unit">{s.pace.unit}</span>
         </div>
       </div>
-      <input type="range" min="-7" max="14" step="1" value="7" data-pace-input aria-label={s.pace.at} />
-      <div class="pace-scale"><span>{s.pace.ahead.replace('{n}', '7')}</span><span>{s.pace.onPlan}</span><span>{s.pace.behind.replace('{n}', '14')}</span></div>
-      <p class="pace-note" data-pace-note></p>
+      <div class="pace-track" aria-hidden="true">
+        <span class="pace-fill" data-pace-fill></span>
+        <span class="pace-mid"></span>
+        <span class="pace-thumb" data-pace-thumb></span>
+      </div>
+      <div class="pace-scale" aria-hidden="true">
+        <span>{s.pace.ahead.replace('{n}', '7')}</span>
+        <span class="mid">{s.pace.onPlan}</span>
+        <span class="end">{s.pace.behind.replace('{n}', '14')}</span>
+      </div>
+      <p class="pace-note swap" data-pace-note>{s.pace.noteOnPlan}</p>
       <div class="pace-past">
         <div class="pace-row-head">
           <span class="label">{s.pace.past}</span>
@@ -222,90 +220,156 @@ const left = totalToday - read;
   </div>
 </section>
 
-<!-- 03 Tour: the screens, one at a time. -->
+<!-- The screens: stacked, then fanned out side by side when the section comes in. -->
 <section class="band" id="tour">
   <div class="wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.tour.kicker}</p>
       <h2>{s.tour.title[0]}<br />{s.tour.title[1]}</h2>
     </header>
-    <div class="tour" data-tour data-reveal>
-      <div class="tabs" role="tablist">
-        {s.tour.tabs.map((tab, i) => (
-          <button type="button" role="tab" class="tab" aria-selected={i === 0 ? 'true' : 'false'} data-tab={i}>
-            <span class="tab-num num">{String(i + 1).padStart(2, '0')}</span>
-            <span class="tab-text">
-              <span class="tab-label">{tab.label}</span>
-              <b>{tab.title}</b>
-              <span class="tab-desc">{tab.text}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-      <div class="device">
-        <div class="screen">
-          {s.tour.tabs.map((tab, i) =>
-            tab.id === 'widgets' ? (
-              <div class:list={['shot', 'wall', { on: i === 0 }]} data-shot={i}>
-                <div class="wall-row">
-                  <img src={`${base}/app/${lang}/widget-small.png`} alt="" class="w-small" loading="lazy" />
-                  <img src={`${base}/app/${lang}/widget-lock.png`} alt="" class="w-lock" loading="lazy" />
+    <div class="fan" data-fan>
+      {s.tour.tabs.map((tab, i) => (
+        <figure class="fan-item" style={`--i:${i};z-index:${fanZ[i]}`}>
+          <div class="device">
+            <div class="screen">
+              {tab.id === 'widgets' ? (
+                <div class="wall">
+                  <div class="wall-row">
+                    <img src={`${base}/app/${lang}/widget-small.png`} alt="" class="w-small" loading="lazy" />
+                    <img src={`${base}/app/${lang}/widget-lock.png`} alt="" class="w-lock" loading="lazy" />
+                  </div>
+                  <img src={`${base}/app/${lang}/widget-medium.png`} alt="" class="w-medium" loading="lazy" />
                 </div>
-                <img src={`${base}/app/${lang}/widget-medium.png`} alt="" class="w-medium" loading="lazy" />
-              </div>
-            ) : (
-              <img class:list={['shot', { on: i === 0 }]} data-shot={i} src={`${base}/app/${lang}/${tab.id}.png`} alt={tab.title} loading={i === 0 ? 'eager' : 'lazy'} />
-            )
-          )}
-        </div>
-      </div>
+              ) : (
+                <img class="shot" src={`${base}/app/${lang}/${tab.id}.png`} alt={tab.title} loading="lazy" />
+              )}
+            </div>
+          </div>
+          <figcaption>
+            <span class="tab-label">{tab.label}</span>
+            <b>{tab.title}</b>
+            <span>{tab.text}</span>
+          </figcaption>
+        </figure>
+      ))}
     </div>
   </div>
 </section>
 
-<!-- 04 Details: the motion, shown small. -->
-<section class="band" id="details">
+<!-- UI and UX: six small moments, played one after another. -->
+<section class="band" id="ux">
   <div class="wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.details.kicker}</p>
-      <h2>{s.details.title[0]}<br />{s.details.title[1]}</h2>
-      <p class="section-lead">{s.details.lead}</p>
+      <h2>{s.ux.title[0]}<br />{s.ux.title[1]}</h2>
+      <p class="section-lead">{s.ux.lead}</p>
     </header>
-    <div class="details" data-details>
-      <article class="box detail" data-reveal>
-        <div class="demo demo-number" data-demo="number">
-          <span class="roll mid" data-roll="demo" data-value="58">58</span>
-          <span class="demo-unit">{s.details.demoUnit}</span>
+    <div class="bento" data-ux>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene scene-clock" data-scene="clock">
+          <span class="scene-label">{s.ux.clockLabel}</span>
+          <span class="clock"><span class="roll" data-clock-h data-value="23">23</span><span class="colon">:</span><span class="roll" data-clock-m data-value="58">58</span></span>
+          <span class="clock-date swap" data-clock-date>{s.ux.clockDate[0]}</span>
+          <span class="clock-left">{s.ux.leftPre}<span class="roll" data-clock-left data-value="41">41</span>{s.ux.leftPost}</span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
         </div>
-        <h3>{s.details.items[0].title}</h3>
-        <p>{s.details.items[0].text}</p>
-        <button type="button" class="replay link" data-replay="number">{s.details.replay}</button>
+        <h3>{s.ux.items[0].title}</h3>
+        <p>{s.ux.items[0].text}</p>
       </article>
-      <article class="box detail" data-reveal>
-        <div class="demo demo-check" data-demo="check">
-          <span class="app-row demo-row"><span class="check" aria-hidden="true"><i /></span><span class="app-title"><b>{s.details.demoBook}</b></span><span class="app-range"><b>{s.details.demoRange}</b></span></span>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene" data-scene="undo">
+          <span class="app-row scene-row" data-undo-row>
+            <span class="check" aria-hidden="true" data-undo-check><i /></span>
+            <span class="app-title"><b>{s.ux.book}</b></span>
+            <span class="app-range"><b>{s.ux.range}</b></span>
+          </span>
+          <span class="tap" aria-hidden="true"></span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
         </div>
-        <h3>{s.details.items[1].title}</h3>
-        <p>{s.details.items[1].text}</p>
-        <button type="button" class="replay link" data-replay="check">{s.details.replay}</button>
+        <h3>{s.ux.items[1].title}</h3>
+        <p>{s.ux.items[1].text}</p>
       </article>
-      <article class="box detail" data-reveal>
-        <div class="demo demo-blocks" data-demo="blocks">
-          <span class="blocks tall" style="--reads:5"><i data-demo-fill style="width:0%" />{[1, 2, 3, 4].map((k) => <span class="sep" data-at={k / 5} style={`left:${k * 20}%`} />)}</span>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene scene-quiet" data-scene="quiet">
+          <span class="banner" data-banner>
+            <img src={`${base}/favicon.png`} alt="" width="26" height="26" />
+            <span class="banner-text">
+              <span class="banner-top"><b>Laps</b><small>{s.ux.reminderTime}</small></span>
+              <span>{s.ux.leftPre}{s.home.books[0].pages}{s.ux.leftPost}</span>
+            </span>
+          </span>
+          <span class="quiet" data-quiet>{s.ux.quiet}</span>
+          <span class="app-row scene-row" data-quiet-row>
+            <span class="check" aria-hidden="true" data-quiet-check><i /></span>
+            <span class="app-title"><b>{s.home.books[0].title}</b></span>
+            <span class="app-range"><b>{s.home.books[0].range}</b></span>
+          </span>
+          <span class="tap" aria-hidden="true"></span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
         </div>
-        <h3>{s.details.items[2].title}</h3>
-        <p>{s.details.items[2].text}</p>
-        <button type="button" class="replay link" data-replay="blocks">{s.details.replay}</button>
+        <h3>{s.ux.items[2].title}</h3>
+        <p>{s.ux.items[2].text}</p>
+      </article>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene scene-chapter" data-scene="chapter">
+          <span class="ch-range">
+            <b>{chapterPre}<span class="roll" data-ch-to data-value="37">37</span>{chapterPost}</b>
+            <small data-ch-note>{s.ux.chapterEnd}</small>
+          </span>
+          <span class="ch-strip">
+            <span class="ch-read"></span>
+            <span class="ch-today" data-ch-today></span>
+            <span class="ch-gap" data-ch-gap>{lang === 'ko' ? '3쪽' : '3 p'}</span>
+            <span class="ch-break"></span>
+          </span>
+          <span class="ch-labels"><span>{s.ux.chapter[0]}</span><span class="second">{s.ux.chapter[1]}</span></span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
+        </div>
+        <h3>{s.ux.items[3].title}</h3>
+        <p>{s.ux.items[3].text}</p>
+      </article>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene scene-save" data-scene="save">
+          <div class="save-home">
+            <span class="save-title">{s.ux.homeBook}</span>
+            <span class="blocks" data-save-blocks><i /><span class="sep" /><span class="sep" /><span class="sep" /></span>
+          </div>
+          <div class="save-edit" data-save-edit>
+            <span class="mini-nav"><b data-save-back>{s.ux.back}</b><span>{s.ux.editTitle}</span></span>
+            <span class="mini-field">
+              <span>{s.ux.readsLabel}</span>
+              <span class="mini-stepper"><span>−</span><span class="roll" data-save-roll data-value="3">3</span><span data-save-plus>+</span></span>
+            </span>
+          </div>
+          <span class="tap" aria-hidden="true"></span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
+        </div>
+        <h3>{s.ux.items[4].title}</h3>
+        <p>{s.ux.items[4].text}</p>
+      </article>
+      <article class="box tile" data-tile data-reveal>
+        <div class="scene scene-pass" data-scene="pass">
+          <div class="pass-home">
+            <span class="pass-head"><span class="kicker">{s.home.todo}</span><span class="app-add" data-pass-add>{s.home.add}</span></span>
+            <span class="pass-row" data-pass-row><span class="check" aria-hidden="true"><i /></span><b>{s.home.books[0].title}</b></span>
+          </div>
+          <div class="pass-sheet" data-pass-sheet>
+            <span class="label">{s.ux.pass}</span>
+            <b>{s.ux.passLine}</b>
+            <small>{s.ux.passNote}</small>
+          </div>
+          <span class="tap" aria-hidden="true"></span>
+          <span class="tile-progress" aria-hidden="true"><i /></span>
+        </div>
+        <h3>{s.ux.items[5].title}</h3>
+        <p>{s.ux.items[5].text}</p>
       </article>
     </div>
   </div>
 </section>
 
-<!-- 05 Price -->
+<!-- Price -->
 <section class="band" id="price">
   <div class="wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.pricing.kicker}</p>
       <h2>{s.pricing.title[0]}<br />{s.pricing.title[1]}</h2>
     </header>
     <div class="plans">
@@ -313,20 +377,23 @@ const left = totalToday - read;
         <div class="plan-head"><h3>{s.pricing.free.title}</h3><span>{s.pricing.free.price}</span></div>
         <ul>{s.pricing.free.lines.map((line) => <li>{line}</li>)}</ul>
       </div>
-      <div class="box plan pass" data-reveal>
-        <div class="plan-head"><h3>{s.pricing.pass.title}</h3><span>{s.pricing.pass.price}</span></div>
-        <ul>{s.pricing.pass.lines.map((line) => <li>{line}</li>)}</ul>
+      <div class="plan pass" data-pass data-reveal>
+        <span class="beam-glow" aria-hidden="true"></span>
+        <div class="box plan-inner">
+          <div class="plan-head"><h3>{s.pricing.pass.title}</h3><span>{s.pricing.pass.price}</span></div>
+          <ul>{s.pricing.pass.lines.map((line) => <li>{line}</li>)}</ul>
+        </div>
+        <span class="beam" aria-hidden="true"></span>
       </div>
     </div>
     <p class="langs" data-reveal>{s.languagesLabel}: {languages}</p>
   </div>
 </section>
 
-<!-- 06 FAQ -->
+<!-- FAQ -->
 <section class="band" id="faq">
   <div class="wrap faq-wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">{s.faq.kicker}</p>
       <h2>{s.faq.title[0]}</h2>
     </header>
     <div class="box faq" data-reveal>
