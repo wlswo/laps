@@ -30,7 +30,17 @@ const home = href(lang, '');
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(`${base}/screens/${lang}/1.png`, Astro.site).toString()} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Laps" />
+    <meta property="og:locale" content={lang === 'ko' ? 'ko_KR' : 'en_US'} />
+    <meta property="og:image" content={new URL(`${base}/og.png`, Astro.site).toString()} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Laps" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(`${base}/og.png`, Astro.site).toString()} />
     <meta name="theme-color" content="#070b14" />
     <link rel="icon" type="image/png" href={`${base}/favicon.png`} />
     <link rel="apple-touch-icon" href={`${base}/icon.png`} />
