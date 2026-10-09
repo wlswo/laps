@@ -32,7 +32,7 @@ export const t = {
       home: { title: "Today's pages", text: "One tap when you're done" },
       pace: { kicker: 'Pace', title: 'Behind? A few pages more a day', text: 'Laps spreads the rest to your finish date' },
       brand: 'iPhone, 12 languages',
-      widget: { kicker: 'Widgets', title: 'Without opening the app', text: 'Check off from the Home Screen' },
+      widget: { kicker: 'Widgets', title: 'On your Home Screen', text: 'Check off without opening the app' },
       calc: { kicker: 'The math', title: 'Counts how every read gets faster', text: 'Lands right on your finish date' },
       history: { title: 'Watch reads get faster', text: 'How many days each read took' },
     },

@@ -45,8 +45,8 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
       <p>{s.tiles.brand}</p>
     </div>
     <div class="tile t-widget" data-in>
-      <div class="clip"><img class="widget" src={shot('widget')} alt="" loading="lazy" /></div>
       <div class="copy"><span class="kicker">{s.tiles.widget.kicker}</span><h3>{s.tiles.widget.title}</h3><p>{s.tiles.widget.text}</p></div>
+      <img class="widget" src={shot('widget')} alt="" loading="lazy" />
     </div>
     <div class="tile wide" data-in>
       <div class="clip"><div class="phone"><img src={shot('preview')} alt="" loading="lazy" /></div></div>

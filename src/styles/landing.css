@@ -45,7 +45,10 @@
 .t-widget { background: linear-gradient(150deg, #8e3f7c 0%, #4b56c8 55%, #1c8f86 100%); color: #fff; }
 .t-widget .kicker { color: #ffd08f; }
 .t-widget p { color: rgba(255, 255, 255, .78); }
-.widget { position: absolute; left: 50%; bottom: 26px; width: 300px; margin-left: -150px; border-radius: 22px; box-shadow: 0 14px 30px rgba(0, 0, 0, .35); }
+/* The widget sits under the words, never on them: pushed to the bottom, cropped by the tile if the words run long. */
+.t-widget { display: flex; flex-direction: column; padding-bottom: 24px; }
+.t-widget .copy { margin-bottom: 18px; }
+.widget { flex: none; display: block; width: min(280px, 84%); margin: auto auto 0; border-radius: 22px; box-shadow: 0 14px 30px rgba(0, 0, 0, .35); }
 
 /* Tiles come in once, no bounce. */
 [data-in] { transition: opacity .6s var(--ease), transform .6s var(--ease); }
@@ -107,7 +110,7 @@
 }
 
 /* ---------- Narrow screens ---------- */
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
   .bento { grid-template-columns: 1fr 1fr; }
   .wide .copy { max-width: 52%; }
   .wide .phone { right: 28px; }
