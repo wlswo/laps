@@ -1,0 +1,138 @@
+---
+// The landing page, in either language: hero with the home screen, the five App Store screenshots, what it does,
+// the price, and the privacy line.
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const s = t[lang];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<section class="hero">
+  <div class="copy">
+    <p class="kicker">{s.hero.kicker}</p>
+    <h1>{s.hero.headline.split('\n').map((line, i) => (<>{i > 0 && <br />}{line}</>))}</h1>
+    <p class="lead">{s.hero.lead}</p>
+    <p class="chip">{s.hero.free}</p>
+    <div class="cta">
+      <span class="soon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.8-1-2.8-4.1zM14 5.2c.7-.8 1.2-2 1-3.2-1 .1-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.3z"/></svg>{s.hero.soon}</span>
+      <span class="note">{s.hero.iphone}</span>
+    </div>
+  </div>
+  <div class="phone box">
+    <img src={`${base}/app/${lang}/home.png`} alt="" width="550" height="1195" />
+  </div>
+</section>
+
+<section class="shots" aria-label="Screenshots">
+  <div class="strip">
+    {s.shots.map((caption, i) => (
+      <figure>
+        <img src={`${base}/screens/${lang}/${i + 1}.png`} alt={caption} width="603" height="1311" loading="lazy" />
+      </figure>
+    ))}
+  </div>
+</section>
+
+<section class="features">
+  <p class="kicker">{s.featuresKicker}</p>
+  <div class="box list">
+    {s.features.map(([title, text]) => (
+      <div class="row">
+        <h3>{title}</h3>
+        <p>{text}</p>
+      </div>
+    ))}
+  </div>
+  <p class="langs">{s.languages}: 한국어, English, 日本語, 简体中文, 繁體中文, Español, Português, Français, Deutsch, Tiếng Việt, ไทย, Bahasa Indonesia</p>
+</section>
+
+<section class="pricing">
+  <p class="kicker">{s.pricingKicker}</p>
+  <div class="plans">
+    <div class="box plan">
+      <div class="head"><h3>{s.free.title}</h3><span>{s.free.price}</span></div>
+      <ul>{s.free.lines.map((line) => <li>{line}</li>)}</ul>
+    </div>
+    <div class="box plan pass">
+      <div class="head"><h3>{s.pass.title}</h3><span>{s.pass.price}</span></div>
+      <ul>{s.pass.lines.map((line) => <li>{line}</li>)}</ul>
+    </div>
+  </div>
+  <p class="privacy">{s.privacyNote}</p>
+</section>
+
+<style>
+  .hero {
+    display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center;
+    padding: 40px 0 24px;
+  }
+  .hero h1 { font: 700 64px/1.08 var(--sans); letter-spacing: -1.5px; margin: 14px 0 22px; }
+  :global(html[lang='ko']) .hero h1 { font-size: 58px; letter-spacing: -1px; line-height: 1.16; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 0 24px; }
+  .chip {
+    display: inline-block; margin: 0 0 28px; padding: 8px 14px; background: var(--accent);
+    border: 1.5px solid var(--ink); font: 700 14px/1.35 var(--mono);
+  }
+  .cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .soon {
+    display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px;
+    background: var(--deep); color: #fff; font: 700 15px var(--mono);
+    box-shadow: 4px 4px 0 var(--faint);
+  }
+  .note { font: 600 13px var(--mono); color: var(--muted); }
+  .phone { padding: 0; justify-self: center; width: min(360px, 100%); }
+  .phone img { display: block; width: 100%; height: auto; }
+
+  .shots { margin: 72px -20px 0; }
+  .strip {
+    display: flex; gap: 20px; overflow-x: auto; padding: 4px 20px 20px; scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .strip figure { margin: 0; flex: 0 0 auto; width: 250px; scroll-snap-align: start; }
+  .strip img { display: block; width: 100%; height: auto; border: 1.5px solid var(--ink); }
+
+  .features { margin-top: 80px; }
+  .list { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; }
+  .row { padding: 18px 22px; border-bottom: 1px solid var(--hair); }
+  .row:nth-child(4n + 2), .row:nth-child(4n + 3) { background: var(--zebra); }
+  .row:nth-last-child(-n + 2) { border-bottom: 0; }
+  .row:nth-child(odd) { border-right: 1px solid var(--hair); }
+  .row h3 { font: 600 18px/1.3 var(--sans); margin: 0 0 4px; }
+  .row p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .langs { margin: 18px 0 0; font: 600 13px/1.7 var(--mono); color: var(--muted); }
+
+  .pricing { margin-top: 80px; }
+  .plans { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .plan { padding: 0; }
+  .plan .head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 16px 22px; border-bottom: 1.5px solid var(--ink);
+  }
+  .plan.pass .head { background: var(--accent); }
+  .plan h3 { margin: 0; font: 700 22px var(--sans); }
+  .plan .head span { font: 700 14px var(--mono); }
+  .plan ul { list-style: none; margin: 0; padding: 8px 22px 14px; }
+  .plan li { padding: 9px 0 9px 26px; position: relative; border-bottom: 1px solid var(--hair); }
+  .plan li:last-child { border-bottom: 0; }
+  .plan li::before {
+    content: ''; position: absolute; left: 0; top: 15px; width: 12px; height: 12px;
+    border: 1.5px solid var(--ink); background: linear-gradient(var(--ink), var(--ink)) center / 6px 6px no-repeat;
+  }
+  .privacy { margin: 26px 0 0; font: 600 14px var(--mono); color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 16px; }
+    .hero h1, :global(html[lang='ko']) .hero h1 { font-size: 44px; }
+    .list, .plans { grid-template-columns: 1fr; }
+    .row:nth-child(odd) { border-right: 0; }
+    .row:nth-child(n) { background: none; border-bottom: 1px solid var(--hair); }
+    .row:nth-child(even) { background: var(--zebra); }
+    .row:last-child { border-bottom: 0; }
+    .strip figure { width: 210px; }
+  }
+</style>

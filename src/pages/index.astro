@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Landing from '../components/Landing.astro';
+import { t } from '../i18n';
+const s = t.en;
+---
+
+<Layout lang="en" title={s.title} description={s.description} page="">
+  <Landing lang="en" />
+</Layout>

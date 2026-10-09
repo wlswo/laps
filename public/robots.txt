@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wlswo.me/laps/sitemap-index.xml
