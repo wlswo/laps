@@ -36,7 +36,7 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
       <div class="copy"><h3>{s.tiles.home.title}</h3><p>{s.tiles.home.text}</p></div>
     </div>
     <div class="tile wide" data-in>
-      <div class="clip"><div class="phone"><img src={shot('pace')} alt="" loading="lazy" /></div></div>
+      <div class="panel mid"><img src={shot('pace-box')} alt="" loading="lazy" /></div>
       <div class="copy"><span class="kicker">{s.tiles.pace.kicker}</span><h3>{s.tiles.pace.title}</h3><p>{s.tiles.pace.text}</p></div>
     </div>
     <div class="tile t-brand" data-in>
@@ -49,7 +49,7 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
       <img class="widget" src={shot('widget')} alt="" loading="lazy" />
     </div>
     <div class="tile wide" data-in>
-      <div class="clip"><div class="phone"><img src={shot('preview')} alt="" loading="lazy" /></div></div>
+      <div class="panel top"><img src={shot('preview-box')} alt="" loading="lazy" /></div>
       <div class="copy"><span class="kicker">{s.tiles.calc.kicker}</span><h3>{s.tiles.calc.title}</h3><p>{s.tiles.calc.text}</p></div>
     </div>
     <div class="tile t-history" data-in>
