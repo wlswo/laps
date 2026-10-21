@@ -12,6 +12,8 @@ export function href(lang: Lang, page: Page): string {
   return '/' + parts.join('/').replace(/^\//, '');
 }
 
+export const appStore = 'https://apps.apple.com/us/app/laps-exam-reading-plan/id6820920888';
+
 export function otherLang(lang: Lang): Lang {
   return lang === 'en' ? 'ko' : 'en';
 }
@@ -24,7 +26,7 @@ export const t = {
       'Enter the pages, a finish date and how many reads. Laps works out today\'s pages, and re-plans the rest when you fall behind or get ahead.',
     hero: {
       tagline: 'You just read. Laps does the math.',
-      storeSmall: 'Coming soon to the',
+      storeSmall: 'Download on the',
       storeBig: 'App Store',
       free: 'One book free forever',
     },
@@ -65,7 +67,7 @@ export const t = {
       '책 범위, 끝낼 날, 회독 수만 넣으세요. 매일 읽을 쪽을 알려주고, 밀리거나 앞서면 끝낼 날까지 남은 분량을 다시 고르게 나눠 드려요.',
     hero: {
       tagline: '읽기만 하세요. 계산은 Laps가 할게요.',
-      storeSmall: '곧 출시',
+      storeSmall: '지금 다운로드',
       storeBig: 'App Store',
       free: '책 1권 평생 무료',
     },

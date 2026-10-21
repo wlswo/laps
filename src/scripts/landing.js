@@ -1,7 +1,15 @@
-// The little that moves on the landing page: tiles come in once as they reach the screen, the answers open
-// smoothly, and the Lifetime Pass beam runs only while it is on screen.
+// The little that moves on the landing page: the sunrise behind the hero, tiles come in once as they reach the
+// screen, the answers open smoothly, and the Lifetime Pass beam runs only while it is on screen.
+import { startHorizon } from './horizon.js';
+
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+/* ---------- The sunrise behind the hero ---------- */
+(function horizon() {
+  const canvas = document.querySelector('[data-horizon]');
+  if (canvas) startHorizon(canvas);
+})();
 
 /* ---------- Tiles come in, one after another ---------- */
 (function reveal() {
