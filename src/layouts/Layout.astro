@@ -1,7 +1,7 @@
 ---
 // Shared frame for every page: dark navy, Space Grotesk and JetBrains Mono (IBM Plex Sans KR for Korean), a quiet
 // header with the language switch, a footer, and the round back-to-top button.
-import { t, type Lang, type Page, otherLang, href } from '../i18n';
+import { t, type Lang, type Page, otherLang, href, appId, appStore } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -15,6 +15,29 @@ const s = t[lang];
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = new URL(href(lang, page), Astro.site).toString();
 const home = href(lang, '');
+const abs = (path: string) => new URL(path, Astro.site).toString();
+// What search engines and AI answers read about the app, on the landing page only. No ratings: none are made up.
+const app = page === '' && {
+  '@context': 'https://schema.org',
+  '@type': 'MobileApplication',
+  name: 'Laps',
+  alternateName: s.title,
+  description,
+  url: canonical,
+  image: abs(`${base}/icon.png`),
+  screenshot: ['home', 'history'].map((name) => abs(`${base}/shots/${lang}/${name}.png`)),
+  operatingSystem: 'iOS',
+  applicationCategory: 'EducationalApplication',
+  inLanguage: lang,
+  downloadUrl: appStore[lang],
+  sameAs: [appStore.en],
+  offers: [s.pricing.free, s.pricing.pass].map((plan) => ({
+    '@type': 'Offer',
+    name: plan.name,
+    price: plan.amount,
+    priceCurrency: plan.currency,
+  })),
+};
 ---
 
 <!doctype html>
@@ -25,8 +48,10 @@ const home = href(lang, '');
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={new URL(href('en', page), Astro.site).toString()} />
-    <link rel="alternate" hreflang="ko" href={new URL(href('ko', page), Astro.site).toString()} />
+    <link rel="alternate" hreflang="en" href={abs(href('en', page))} />
+    <link rel="alternate" hreflang="ko" href={abs(href('ko', page))} />
+    <link rel="alternate" hreflang="x-default" href={abs(href('en', page))} />
+    <meta name="apple-itunes-app" content={`app-id=${appId}`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -36,7 +61,7 @@ const home = href(lang, '');
     <meta property="og:image" content={new URL(`${base}/og.png`, Astro.site).toString()} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Laps" />
+    <meta property="og:image:alt" content={s.title} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -50,6 +75,7 @@ const home = href(lang, '');
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    {app && <script type="application/ld+json" set:html={JSON.stringify(app)} />}
   </head>
   <body>
     <header class="top" data-top>

@@ -6,13 +6,18 @@ export type Page = '' | 'privacy' | 'support';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-/** '/laps', '/laps/support', '/laps/ko', '/laps/ko/privacy'. */
+/** '/laps/', '/laps/support/', '/laps/ko/', '/laps/ko/privacy/'. With the slash, since GitHub Pages redirects to it. */
 export function href(lang: Lang, page: Page): string {
   const parts = [base, lang === 'ko' ? 'ko' : '', page].filter(Boolean);
-  return '/' + parts.join('/').replace(/^\//, '');
+  return '/' + parts.join('/').replace(/^\//, '') + '/';
 }
 
-export const appStore = 'https://apps.apple.com/us/app/laps-exam-reading-plan/id6820920888';
+export const appId = '6820920888';
+/** The App Store listing in each language's own storefront. */
+export const appStore: Record<Lang, string> = {
+  en: `https://apps.apple.com/us/app/laps-exam-reading-plan/id${appId}`,
+  ko: `https://apps.apple.com/kr/app/id${appId}`,
+};
 
 export function otherLang(lang: Lang): Lang {
   return lang === 'en' ? 'ko' : 'en';
@@ -40,8 +45,8 @@ export const t = {
     },
     pricing: {
       title: 'One book, free forever',
-      free: { name: 'Free', price: '$0', unit: '', text: 'One book, everything else included' },
-      pass: { name: 'Lifetime Pass', price: '$4.99', unit: 'once', text: 'As many books as you like, plus widgets' },
+      free: { name: 'Free', price: '$0', amount: '0', currency: 'USD', unit: '', text: 'One book, everything else included' },
+      pass: { name: 'Lifetime Pass', price: '$4.99', amount: '4.99', currency: 'USD', unit: 'once', text: 'As many books as you like, plus widgets' },
     },
     faq: {
       title: ['Questions'],
@@ -81,8 +86,8 @@ export const t = {
     },
     pricing: {
       title: '1권은 평생 무료',
-      free: { name: '무료', price: '0원', unit: '', text: '책 1권, 나머지 기능은 모두' },
-      pass: { name: '평생 이용권', price: '7,700원', unit: '한 번', text: '책 개수 제한 없이, 위젯까지' },
+      free: { name: '무료', price: '0원', amount: '0', currency: 'KRW', unit: '', text: '책 1권, 나머지 기능은 모두' },
+      pass: { name: '평생 이용권', price: '7,700원', amount: '7700', currency: 'KRW', unit: '한 번', text: '책 개수 제한 없이, 위젯까지' },
     },
     faq: {
       title: ['자주 묻는 질문'],

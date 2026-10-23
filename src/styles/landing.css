@@ -46,7 +46,7 @@
 .panel { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; overflow: hidden; background: #f8fafc; display: flex; justify-content: center; padding: 0 26px; }
 .panel img { display: block; width: 100%; max-width: 420px; height: auto; }
 .panel.mid { align-items: center; }
-.panel.top { align-items: flex-start; padding-top: 26px; }
+.panel.high { align-items: flex-start; padding-top: 26px; }
 /* The phone starts under the words, however many lines the title takes (English wraps to two). */
 .t-history { display: flex; flex-direction: column; }
 .t-history .copy { order: -1; }

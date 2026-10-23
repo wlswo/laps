@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://wlswo.me',
   base: '/laps',
-  trailingSlash: 'ignore',
+  // Pages are folders with an index.html, so GitHub Pages serves them with a trailing slash; links and the sitemap match.
+  trailingSlash: 'always',
   integrations: [sitemap()],
 });

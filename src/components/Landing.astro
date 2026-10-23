@@ -23,7 +23,7 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
   <img class="hero-icon" src={`${base}/icon.png`} alt="" width="128" height="128" />
   <h1>Laps</h1>
   <p class="tagline">{brand(s.hero.tagline).map(({ part, laps }) => (laps ? <b>{part}</b> : part))}</p>
-  <a class="store" href={appStore} target="_blank" rel="noopener">
+  <a class="store" href={appStore[lang]} target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.8-1-2.8-4.1zM14 5.2c.7-.8 1.2-2 1-3.2-1 .1-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.3z" /></svg>
     <span><small>{s.hero.storeSmall}</small><strong>{s.hero.storeBig}</strong></span>
   </a>
@@ -33,11 +33,11 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
 <section class="wrap">
   <div class="bento">
     <div class="tile tall" data-in>
-      <div class="clip"><div class="phone"><img src={shot('home')} alt="" loading="lazy" /></div></div>
+      <div class="clip"><div class="phone"><img src={shot('home')} alt={s.tiles.home.title} loading="lazy" /></div></div>
       <div class="copy"><h3>{s.tiles.home.title}</h3><p>{s.tiles.home.text}</p></div>
     </div>
     <div class="tile wide" data-in>
-      <div class="panel mid"><img src={shot('pace-box')} alt="" loading="lazy" /></div>
+      <div class="panel mid"><img src={shot('pace-box')} alt={s.tiles.pace.title} loading="lazy" /></div>
       <div class="copy"><span class="kicker">{s.tiles.pace.kicker}</span><h3>{s.tiles.pace.title}</h3><p>{s.tiles.pace.text}</p></div>
     </div>
     <div class="tile t-brand" data-in>
@@ -47,14 +47,14 @@ const brand = (text: string) => text.split(/(Laps)/).map((part) => ({ part, laps
     </div>
     <div class="tile t-widget" data-in>
       <div class="copy"><span class="kicker">{s.tiles.widget.kicker}</span><h3>{s.tiles.widget.title}</h3><p>{s.tiles.widget.text}</p></div>
-      <img class="widget" src={shot('widget')} alt="" loading="lazy" />
+      <img class="widget" src={shot('widget')} alt={s.tiles.widget.title} loading="lazy" />
     </div>
     <div class="tile wide" data-in>
-      <div class="panel top"><img src={shot('preview-box')} alt="" loading="lazy" /></div>
+      <div class="panel high"><img src={shot('preview-box')} alt={s.tiles.calc.title} loading="lazy" /></div>
       <div class="copy"><span class="kicker">{s.tiles.calc.kicker}</span><h3>{s.tiles.calc.title}</h3><p>{s.tiles.calc.text}</p></div>
     </div>
     <div class="tile t-history" data-in>
-      <div class="clip"><div class="phone"><img src={shot('history')} alt="" loading="lazy" /></div></div>
+      <div class="clip"><div class="phone"><img src={shot('history')} alt={s.tiles.history.title} loading="lazy" /></div></div>
       <div class="copy"><h3>{s.tiles.history.title}</h3><p>{s.tiles.history.text}</p></div>
     </div>
   </div>
